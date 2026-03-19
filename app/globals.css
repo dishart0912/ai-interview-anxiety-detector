@@ -1,0 +1,101 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink:    #FF3CAC;
+  --purple:  #784BA0;
+  --blue:    #2B86C5;
+  --cyan:    #00D4FF;
+  --green:   #00F5A0;
+  --yellow:  #FFD93D;
+  --dark:    #0A0A0F;
+  --dark2:   #12121A;
+  --dark3:   #1C1C28;
+  --card:    #16161F;
+  --border:  rgba(255,255,255,0.08);
+  --text:    #F0F0FF;
+  --muted:   rgba(240,240,255,0.45);
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --grad-main: linear-gradient(135deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+  --grad-green: linear-gradient(135deg, #00F5A0, #00D4FF);
+  --grad-fire: linear-gradient(135deg, #FFD93D, #FF3CAC);
+}
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark2); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glow blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.blob-1 { width: 600px; height: 600px; background: rgba(120,75,160,0.15); top: -200px; right: -100px; }
+.blob-2 { width: 400px; height: 400px; background: rgba(43,134,197,0.12); bottom: -100px; left: -100px; }
+.blob-3 { width: 300px; height: 300px; background: rgba(255,60,172,0.08); top: 40%; left: 40%; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.fade-up { animation: fadeUp 0.5s ease forwards; }
+.fade-up-2 { animation: fadeUp 0.5s 0.1s ease both; }
+.fade-up-3 { animation: fadeUp 0.5s 0.2s ease both; }
+.fade-up-4 { animation: fadeUp 0.5s 0.3s ease both; }
+/* Responsive */
+@media (max-width: 640px) {
+  /* Interview page: stack side panel below */
+  .interview-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+
+  @media (max-width: 640px) {
+  .interview-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .score-rings {
+    display: none !important;
+  }
+  .nav-link-label {
+    display: none;
+  }
+}
+  /* Navbar: shrink logo, hide labels */
+  .nav-link-label {
+    display: none;
+  }
+}
