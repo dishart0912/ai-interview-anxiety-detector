@@ -81,3 +81,9 @@ def predict(data: MetricsInput):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
