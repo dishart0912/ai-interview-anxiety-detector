@@ -6,7 +6,10 @@ async function getMLPrediction(metrics: {
   typingSpeedWpm: number
   answerLengthWords: number
 }) {
-  const res = await fetch('http://localhost:8000/predict', {
+  // Uses env var in production, falls back to localhost in dev
+  const ML_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+  const res = await fetch(`${ML_URL}/predict`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -19,7 +22,6 @@ async function getMLPrediction(metrics: {
   return await res.json()
 }
 
-// Same validation logic as frontend — server-side safety net
 function isValidAnswer(text: string): { valid: boolean; reason: string } {
   const trimmed = text.trim()
   const words = trimmed.split(/\s+/).filter(Boolean)
@@ -67,7 +69,6 @@ function generateFeedback(
     }
   }
 
-  // high anxiety
   return {
     aiFeedback: `Response shows signs of anxiety — ${delaySeconds}s delay before answering and only ${words} words detected. This is very common and improves significantly with practice. Do not be discouraged.`,
     improvementTips: '• Practice mock interviews daily — even 10 minutes helps reduce response delay\n• Prepare 5–6 key stories from your experience that can answer most behavioral questions\n• Use the "pause and breathe" technique: take one breath before typing to reset your focus',
@@ -84,7 +85,6 @@ export async function POST(req: Request) {
     const { answerId, questionText, answerText, metrics } = await req.json()
     console.log('answerId:', answerId)
 
-    // Level 2 — server-side answer validation
     const validation = isValidAnswer(answerText ?? '')
     if (!validation.valid) {
       console.warn('Invalid answer rejected:', validation.reason)
@@ -94,7 +94,6 @@ export async function POST(req: Request) {
       )
     }
 
-    // Step 1 — ML prediction
     let mlResult = null
     try {
       mlResult = await getMLPrediction(metrics)
@@ -106,7 +105,6 @@ export async function POST(req: Request) {
     const score = mlResult?.ml_confidence_score ?? 50
     const anxietyLevel = mlResult?.anxiety_level ?? 'moderate'
 
-    // Step 2 — generate contextual feedback using real metrics
     const { aiFeedback, improvementTips } = generateFeedback(
       anxietyLevel,
       questionText,
@@ -117,7 +115,6 @@ export async function POST(req: Request) {
       }
     )
 
-    // Step 3 — save to Supabase
     const insertData = {
       answer_id: answerId,
       confidence_score: Math.round(score),
